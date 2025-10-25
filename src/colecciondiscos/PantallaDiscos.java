@@ -1,0 +1,885 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package colecciondiscos;
+
+import java.awt.Color;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import java.sql.PreparedStatement;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+/**
+ *
+ * @author Javier
+ */
+public class PantallaDiscos extends javax.swing.JFrame {
+
+    DefaultTableModel modelo = new DefaultTableModel();
+
+    /**
+     * Creates new form PantallaDiscos
+     */
+    public PantallaDiscos() {
+        initComponents();
+
+        //for para rellenar los dos comboBox
+        for (int i = 1900; i < 2051; i++) {
+            cmbAnio.addItem(String.valueOf(i));
+            cmbAnioBusqueda.addItem(String.valueOf(i));
+        }
+
+        modelo.setColumnCount(4);
+        String[] cabeceras = {"Titulo", "Artista", "Año", "Género"};
+        modelo.setColumnIdentifiers(cabeceras);
+
+        tblTabla.setDefaultEditor(Object.class, null); // para que no pueda modificar en las lineas de la tabla
+
+        cargarDiscos();
+        rellenarComboBusqueda();
+
+    }
+
+    private void cargarDiscos() {
+        String cadenaConexion = "jdbc:mysql://localhost:3306/musica";
+        String consulta = "SELECT * FROM discos";
+        Connection conexion = null;
+
+        try {
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conexion = DriverManager.getConnection(cadenaConexion, "root", "");
+            PreparedStatement ps = conexion.prepareStatement(consulta);
+            ResultSet result = ps.executeQuery();
+
+            //vaciar siempre para actualizar nuevos valores posibles
+            DefaultTableModel modeloBorrar = (DefaultTableModel) tblTabla.getModel();
+            modeloBorrar.setRowCount(0);
+
+            while (result.next()) {
+                Object[] fila = {result.getString("titulo"),
+                    result.getString("artista"),
+                    result.getInt("anio"),
+                    result.getString("genero")};
+                modelo.addRow(fila);
+            }
+            tblTabla.setModel(modelo);
+        } catch (Exception e) {
+        } finally {
+            try {
+                if (conexion != null) {
+                    conexion.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void rellenarComboBusqueda() {
+        String artista = "";
+        String genero = "";
+        Connection conexion = null;
+        String cadenaConexion = "jdbc:mysql://localhost:3306/musica";
+        String consulta = "SELECT * FROM discos";
+        try {
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conexion = DriverManager.getConnection(cadenaConexion, "root", "");
+            PreparedStatement ps = conexion.prepareStatement(consulta);
+            ResultSet result = ps.executeQuery();
+            //borrar todos 
+            cmbGeneroBusqueda.removeAllItems();
+            cmbArtistaBusqueda.removeAllItems();
+            //añadir los por defecto - 
+            cmbGeneroBusqueda.addItem("-");
+            cmbArtistaBusqueda.addItem("-");
+            cmbAnioBusqueda.setSelectedIndex(0);
+
+            List<String> artistas = new ArrayList<>();
+            List<String> generos = new ArrayList<>();
+
+            //ir añadiendo todos los generos y artistas si no estan ya
+            while (result.next()) {
+                artista = result.getString("artista");
+                genero = result.getString("genero");
+                if (!artistas.contains(artista)) {
+                    artistas.add(artista);
+                }
+                if (!generos.contains(genero)) {
+                    generos.add(genero);
+                }
+            }
+
+            for (String artistaTemp : artistas) { //añadir no repetidos
+                cmbArtistaBusqueda.addItem(artistaTemp);
+            }
+            for (String generoTemp : generos) {  //añadir no repetidos
+                cmbGeneroBusqueda.addItem(generoTemp);
+            }
+
+        } catch (Exception e) {
+            System.out.print("Ha ocurrido un error al intentar conectarme");
+
+            System.out.println(e.toString());
+        } finally {
+            try {
+                if (conexion != null) {
+                    conexion.close();
+                }
+            } catch (Exception e2) {
+                System.out.println(e2.toString());
+            }
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel4 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        lblEdicion = new javax.swing.JLabel();
+        lblTitulo = new javax.swing.JLabel();
+        lblArtista = new javax.swing.JLabel();
+        lblAnio = new javax.swing.JLabel();
+        lblGenero = new javax.swing.JLabel();
+        btnInsertar = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        txtTitulo = new javax.swing.JTextField();
+        txtArtista = new javax.swing.JTextField();
+        txtGenero = new javax.swing.JTextField();
+        cmbAnio = new javax.swing.JComboBox<>();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblTabla = new javax.swing.JTable();
+        lblBusqueda = new javax.swing.JLabel();
+        lblTituloBusqueda = new javax.swing.JLabel();
+        lblArtistaBusqueda = new javax.swing.JLabel();
+        lblAnioBusqueda = new javax.swing.JLabel();
+        lblGeneroBusqueda = new javax.swing.JLabel();
+        txtTituloBusqueda = new javax.swing.JTextField();
+        cmbArtistaBusqueda = new javax.swing.JComboBox<>();
+        cmbAnioBusqueda = new javax.swing.JComboBox<>();
+        cmbGeneroBusqueda = new javax.swing.JComboBox<>();
+        btnBuscar = new javax.swing.JButton();
+        btnRestablecer = new javax.swing.JButton();
+        lblExportacion = new javax.swing.JLabel();
+        btnSerializado = new javax.swing.JRadioButton();
+        btnCSV = new javax.swing.JRadioButton();
+        lblExportar = new javax.swing.JButton();
+        lblAviso = new javax.swing.JLabel();
+        lblAvisoBusqueda = new javax.swing.JLabel();
+        lblAvisoExportar = new javax.swing.JLabel();
+
+        jLabel4.setText("jLabel4");
+
+        jTextField1.setText("jTextField1");
+
+        jLabel5.setText("jLabel5");
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Colección de discos");
+
+        lblEdicion.setText("Edición");
+
+        lblTitulo.setText("Titulo");
+
+        lblArtista.setText("Artista");
+
+        lblAnio.setText("Año");
+
+        lblGenero.setText("Género");
+
+        btnInsertar.setText("Insertar");
+        btnInsertar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnInsertarMouseClicked(evt);
+            }
+        });
+
+        btnEditar.setText("Editar");
+        btnEditar.setEnabled(false);
+        btnEditar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEditarMouseClicked(evt);
+            }
+        });
+
+        btnEliminar.setText("Eliminar");
+        btnEliminar.setEnabled(false);
+        btnEliminar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEliminarMouseClicked(evt);
+            }
+        });
+
+        cmbAnio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-" }));
+
+        tblTabla.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "", "", "", ""
+            }
+        ));
+        tblTabla.setToolTipText("");
+        tblTabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblTablaMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblTabla);
+
+        lblBusqueda.setText("Búsqueda");
+
+        lblTituloBusqueda.setText("Titulo");
+
+        lblArtistaBusqueda.setText("Artista");
+
+        lblAnioBusqueda.setText("Año");
+
+        lblGeneroBusqueda.setText("Género");
+
+        cmbArtistaBusqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-" }));
+
+        cmbAnioBusqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-" }));
+
+        cmbGeneroBusqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-" }));
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnBuscarMouseClicked(evt);
+            }
+        });
+
+        btnRestablecer.setText("Restablecer");
+        btnRestablecer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnRestablecerMouseClicked(evt);
+            }
+        });
+
+        lblExportacion.setText("Exportación");
+
+        buttonGroup1.add(btnSerializado);
+        btnSerializado.setText("Serializado");
+
+        buttonGroup1.add(btnCSV);
+        btnCSV.setText("CSV");
+
+        lblExportar.setText("Exportar");
+        lblExportar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblExportarMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnInsertar)
+                                .addGap(32, 32, 32)
+                                .addComponent(btnEditar))
+                            .addComponent(lblTitulo))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(42, 42, 42)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblArtista)
+                                        .addGap(187, 187, 187)
+                                        .addComponent(lblAnio))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(txtArtista, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(39, 39, 39)
+                                        .addComponent(cmbAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(13, 13, 13)
+                                .addComponent(btnEliminar)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblAviso)
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lblBusqueda)
+                                .addComponent(lblEdicion)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 755, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btnBuscar)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnRestablecer)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(lblAvisoBusqueda))
+                                .addComponent(lblExportacion)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btnSerializado)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnCSV)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(lblExportar)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(lblAvisoExportar))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(lblTituloBusqueda)
+                                        .addComponent(txtTituloBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGap(28, 28, 28)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(lblArtistaBusqueda)
+                                        .addComponent(cmbArtistaBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGap(43, 43, 43)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(cmbAnioBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblAnioBusqueda))
+                                    .addGap(103, 103, 103)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(lblGeneroBusqueda)
+                                        .addComponent(cmbGeneroBusqueda, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(lblGenero)
+                                .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(26, 26, 26))))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(lblEdicion)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblArtista)
+                            .addComponent(lblAnio)
+                            .addComponent(lblGenero))
+                        .addGap(11, 11, 11))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(lblTitulo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtArtista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnInsertar)
+                    .addComponent(btnEditar)
+                    .addComponent(btnEliminar)
+                    .addComponent(lblAviso))
+                .addGap(20, 20, 20)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55)
+                .addComponent(lblBusqueda)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTituloBusqueda)
+                    .addComponent(lblArtistaBusqueda)
+                    .addComponent(lblAnioBusqueda)
+                    .addComponent(lblGeneroBusqueda))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtTituloBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbArtistaBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbAnioBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbGeneroBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnBuscar)
+                    .addComponent(btnRestablecer)
+                    .addComponent(lblAvisoBusqueda))
+                .addGap(18, 18, 18)
+                .addComponent(lblExportacion)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSerializado)
+                    .addComponent(btnCSV)
+                    .addComponent(lblExportar)
+                    .addComponent(lblAvisoExportar))
+                .addContainerGap(18, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+    //insercion de las canciones
+    private void btnInsertarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInsertarMouseClicked
+        String cadenaConexion = "jdbc:mysql://localhost:3306/musica";
+        String consulta = "INSERT INTO discos (titulo, artista, anio, genero) VALUES (?, ?, ?, ?)";
+        Connection conexion = null;
+        if (txtTitulo.getText().isEmpty() || txtArtista.getText().isEmpty() || cmbAnio.getSelectedItem().equals("-") || txtGenero.getText().isEmpty()) { //rellenar todos los datos
+            lblAviso.setText("Todos los campos tienen que ser rellenados para poder añadir un disco.");
+            lblAviso.setForeground(Color.RED);
+        } else { //insertar
+
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                conexion = DriverManager.getConnection(cadenaConexion, "root", "");
+                conexion.setAutoCommit(false);
+                PreparedStatement ps = conexion.prepareStatement(consulta);
+                ps.setString(1, txtTitulo.getText());
+                ps.setString(2, txtArtista.getText());
+                ps.setInt(3, Integer.parseInt(cmbAnio.getSelectedItem().toString())); // parsearlo a string y luego a int
+                ps.setString(4, txtGenero.getText());
+                int result = ps.executeUpdate();
+                conexion.commit();
+                if (result > 0) { //si se cumple añadir las filas a la tabla de java
+                    lblAviso.setText("Inserción exitosa.");
+                    lblAviso.setForeground(Color.GREEN);
+                    Object[] fila = {
+                        txtTitulo.getText(),
+                        txtArtista.getText(),
+                        Integer.parseInt(cmbAnio.getSelectedItem().toString()),
+                        txtGenero.getText()
+                    };
+                    modelo.addRow(fila);
+                    //borrar campos y ponerlos por defecto una vez se añade
+                    txtTitulo.setText("");
+                    txtArtista.setText("");
+                    cmbAnio.setSelectedIndex(0);
+                    txtGenero.setText("");
+                } else {
+                    lblAviso.setText("Insercion no exitosa.");
+                    lblAviso.setForeground(Color.RED);
+                }
+                cargarDiscos();
+                rellenarComboBusqueda();
+            } catch (Exception e) {
+                try {
+                    if(conexion != null){
+                        conexion.rollback();
+                    }
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (conexion != null) {
+                        conexion.close();
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }
+    }//GEN-LAST:event_btnInsertarMouseClicked
+
+    private void btnEditarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditarMouseClicked
+        //aqui se va abrir el dialogo
+        if (btnEditar.isEnabled()) { //para evitar que pulse aunque este deshabilitado porque dejaba
+            DialogoEditar dialogo = new DialogoEditar(this, true);
+            dialogo.setVisible(true);
+
+            String titulo = txtTitulo.getText();
+            String artista = txtArtista.getText();
+            int anio = Integer.parseInt(cmbAnio.getSelectedItem().toString());
+            String anioComparar = cmbAnio.getSelectedItem().toString();
+            String genero = txtGenero.getText();
+
+            if (titulo.length() > 3 && artista.length() > 3 && anioComparar != "-" && genero.length() > 3) { //no se permite dejar un campo vacio en la edicion
+                if (ClaseIntermedia.editarConfirmar) {
+                    lblAviso.setText("");
+                    txtTitulo.setText("");
+                    txtArtista.setText("");
+                    cmbAnio.setSelectedIndex(0);
+                    txtGenero.setText("");
+                    Connection conexion = null;
+                    String cadenaConexion = "jdbc:mysql://localhost:3306/musica";
+                    String consulta = "UPDATE discos SET titulo = ?, artista = ?,anio = ?,genero = ? WHERE id = ?";
+                    int id = 0;
+                    try {
+                        Class.forName("com.mysql.cj.jdbc.Driver");
+                        conexion = DriverManager.getConnection(cadenaConexion, "root", "");
+                        //consulta para sacar el id para el update
+                        int fila = 0;
+                        String consultaId = "SELECT id FROM discos WHERE titulo = ? AND artista = ? AND anio = ? AND genero = ?"; //consulta para sacar id
+
+                        PreparedStatement psId = conexion.prepareStatement(consultaId);
+                        if (tblTabla.getRowCount() > 1) { // coger una sola fila si selecciona varias
+                            fila = tblTabla.getSelectedRows()[0]; // coger primera fila 
+                        } else {
+                            fila = tblTabla.getSelectedRow();
+                        }
+                        //coger los datos de la tabla para sacar el id no de los datos editados
+                        String tituloTabla = tblTabla.getValueAt(fila, 0).toString();
+                        String artistaTabla = tblTabla.getValueAt(fila, 1).toString();
+                        int anioTabla = Integer.parseInt(tblTabla.getValueAt(fila, 2).toString());
+                        String generoTabla = tblTabla.getValueAt(fila, 3).toString();
+
+                        psId.setString(1, tituloTabla);
+                        psId.setString(2, artistaTabla);
+                        psId.setInt(3, anioTabla);
+                        psId.setString(4, generoTabla);
+
+                        ResultSet result = psId.executeQuery();
+                        if (result.next()) {
+                            id = result.getInt("id");
+                        }
+
+                        //consulta para el update
+                        PreparedStatement ps = conexion.prepareStatement(consulta);
+                        ps.setString(1, titulo);
+                        ps.setString(2, artista);
+                        ps.setInt(3, anio);
+                        ps.setString(4, genero);
+                        ps.setInt(5, id);
+                        int resultado = ps.executeUpdate();
+
+                        System.out.println("Se han actualizado " + resultado + " filas");
+                        cargarDiscos();
+                        rellenarComboBusqueda();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            if (conexion != null) {
+                                conexion.close();
+                            }
+                            btnEditar.setEnabled(false);//desactivacion del boton una vez terminado lo haga o no
+                            btnEliminar.setEnabled(false);
+                        } catch (Exception e) {
+                        }
+                    }
+                }
+            } else {
+                lblAviso.setText("Todos los campos tienen que tener minimo 3 caracteres menos el año claramente");
+                lblAviso.setForeground(Color.red);
+            }
+        }
+    }//GEN-LAST:event_btnEditarMouseClicked
+
+    private void tblTablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTablaMouseClicked
+        String titulo = "";
+        String artista = "";
+        String anio = "";
+        String genero = "";
+
+        lblAviso.setText("");// para cuando le de otra vez quitar el label
+        if (tblTabla.getSelectedRow() != -1) { // activacion de los dos botones de editar y eliminar cuando se selecciona una fila
+            btnEditar.setEnabled(true);
+            btnEliminar.setEnabled(true);
+
+            //pasar arriba a los text field los datos
+            if (tblTabla.getRowCount() > 1) { // coger una sola fila si selecciona varias
+                int filaSeleccionada = tblTabla.getSelectedRows()[0]; // coger primera fila
+                titulo = tblTabla.getValueAt(filaSeleccionada, 0).toString();
+                artista = tblTabla.getValueAt(filaSeleccionada, 1).toString();
+                anio = tblTabla.getValueAt(filaSeleccionada, 2).toString();
+                genero = tblTabla.getValueAt(filaSeleccionada, 3).toString();
+            } else {
+                int fila = tblTabla.getSelectedRow();
+                titulo = tblTabla.getValueAt(fila, 0).toString();
+                artista = tblTabla.getValueAt(fila, 1).toString();
+                anio = tblTabla.getValueAt(fila, 2).toString();
+                genero = tblTabla.getValueAt(fila, 3).toString();
+            }
+            //pasar a los campos los datos de la tabla
+            txtTitulo.setText(titulo);
+            txtArtista.setText(artista);
+            cmbAnio.setSelectedItem(anio);
+            txtGenero.setText(genero);
+        } else {
+            btnEditar.setEnabled(false);
+            btnEliminar.setEnabled(false);
+        }
+
+    }//GEN-LAST:event_tblTablaMouseClicked
+    //eliminacion
+    private void btnEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEliminarMouseClicked
+        if (btnEliminar.isEnabled()) { // si esta habilitado el boton
+            DialogoEliminar dialogo = new DialogoEliminar(this, true);
+            dialogo.setVisible(true);
+
+            if (ClaseIntermedia.eliminarConfirmar) {
+                lblAviso.setText("");
+                txtTitulo.setText("");
+                txtArtista.setText("");
+                cmbAnio.setSelectedIndex(0);
+                txtGenero.setText("");
+                Connection conexion = null;
+                String cadenaConexion = "jdbc:mysql://localhost:3306/musica";
+                String consultaId = "DELETE FROM discos WHERE id = ?";
+                int id = 0;
+                try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    conexion = DriverManager.getConnection(cadenaConexion, "root", "");
+                    //consulta para sacar el id para el update
+                    int fila = 0;
+                    String consultaSacarId = "SELECT id FROM discos WHERE titulo = ? AND artista = ? AND anio = ? AND genero = ?";
+
+                    PreparedStatement psId = conexion.prepareStatement(consultaSacarId);
+                    if (tblTabla.getRowCount() > 1) { // coger una sola fila si selecciona varias
+                        fila = tblTabla.getSelectedRows()[0]; // coger primera fila 
+                    } else {
+                        fila = tblTabla.getSelectedRow();
+                    }
+                    //coger los datos de la tabla para sacar el id no de los datos editados de los campos
+                    String tituloTabla = tblTabla.getValueAt(fila, 0).toString();
+                    String artistaTabla = tblTabla.getValueAt(fila, 1).toString();
+                    int anioTabla = Integer.parseInt(tblTabla.getValueAt(fila, 2).toString());
+                    String generoTabla = tblTabla.getValueAt(fila, 3).toString();
+
+                    psId.setString(1, tituloTabla);
+                    psId.setString(2, artistaTabla);
+                    psId.setInt(3, anioTabla);
+                    psId.setString(4, generoTabla);
+
+                    ResultSet result = psId.executeQuery();
+                    if (result.next()) {
+                        id = result.getInt("id");
+                    }
+
+                    //consulta para el delete
+                    PreparedStatement ps = conexion.prepareStatement(consultaId);
+                    ps.setInt(1, id);
+                    int resultado = ps.executeUpdate();
+
+                    System.out.println("Se han borrado " + resultado + " filas");
+                    cargarDiscos();
+                    rellenarComboBusqueda();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (conexion != null) {
+                            conexion.close();
+                        }
+                        btnEditar.setEnabled(false);//desactivacion del boton una vez terminado lo haga o no
+                        btnEliminar.setEnabled(false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_btnEliminarMouseClicked
+    //buscar
+    private void btnBuscarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBuscarMouseClicked
+        String titulo = txtTituloBusqueda.getText();
+        String artista = cmbArtistaBusqueda.getSelectedItem().toString();
+        String anioComparar = cmbAnioBusqueda.getSelectedItem().toString();
+        String genero = cmbGeneroBusqueda.getSelectedItem().toString();
+        String consulta = "";
+
+        if (titulo.isEmpty() && artista.equals("-") && anioComparar.equals("-") && genero.equals("-")) { //si estan todos vacios y le da a buscar rellenar tabla
+            cargarDiscos();
+            lblAvisoBusqueda.setText("");
+            return;
+        }
+
+        if (!titulo.isEmpty() && artista.equals("-") && anioComparar.equals("-") && genero.equals("-")) { //si solo esta titulo
+            consulta = "SELECT * FROM discos WHERE titulo LIKE '%" + titulo + "%'";
+            lblAvisoBusqueda.setText("");
+        } else if (titulo.isEmpty() && !artista.equals("-") && anioComparar.equals("-") && genero.equals("-")) { //si solo esta artista
+            consulta = "SELECT * FROM discos WHERE artista = '" + artista + "'";
+            lblAvisoBusqueda.setText("");
+        } else if (titulo.isEmpty() && artista.equals("-") && !anioComparar.equals("-") && genero.equals("-")) { //si solo esta año
+            consulta = "SELECT * FROM discos WHERE anio = '" + anioComparar + "'";
+            lblAvisoBusqueda.setText("");
+        } else if (titulo.isEmpty() && artista.equals("-") && anioComparar.equals("-") && !genero.equals("-")) { //si solo esta genero
+            consulta = "SELECT * FROM discos WHERE genero = '" + genero + "'";
+            lblAvisoBusqueda.setText("");
+        } else if (!titulo.isEmpty() && !artista.equals("-") && !anioComparar.equals("-") && !genero.equals("-")) { //si estan todos
+            consulta = "SELECT * FROM discos WHERE titulo LIKE '%" + titulo + "%' AND artista = '" + artista + "' AND anio = '" + anioComparar + "' AND genero = '" + genero + "'";
+            lblAvisoBusqueda.setText("");
+        } else {
+            lblAvisoBusqueda.setText("Hay que introducir todos o solo 1");
+            lblAvisoBusqueda.setForeground(Color.red);
+        }
+
+        Connection conexion = null;
+        String cadenaConexion = "jdbc:mysql://localhost:3306/musica";
+        DefaultTableModel modeloBorrar = (DefaultTableModel) tblTabla.getModel();
+
+        modeloBorrar.setRowCount(0);
+        
+        if (!consulta.equals("")) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                conexion = DriverManager.getConnection(cadenaConexion, "root", "");
+
+                PreparedStatement ps = conexion.prepareStatement(consulta);
+
+                ResultSet result = ps.executeQuery();
+
+                while (result.next()) {
+                    Object[] fila = {result.getString("titulo"),
+                        result.getString("artista"),
+                        result.getInt("anio"),
+                        result.getString("genero")};
+                    modelo.addRow(fila);
+                }
+                tblTabla.setModel(modelo);
+            } catch (Exception e) {
+            } finally {
+                try {
+                    if (conexion != null) {
+                        conexion.close();
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }
+    }//GEN-LAST:event_btnBuscarMouseClicked
+    //restablecer
+    private void btnRestablecerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRestablecerMouseClicked
+        rellenarComboBusqueda();
+        cargarDiscos();
+        txtTituloBusqueda.setText("");
+        lblAvisoBusqueda.setText("");
+    }//GEN-LAST:event_btnRestablecerMouseClicked
+    //exportar
+    private void lblExportarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblExportarMouseClicked
+
+        List<Disco> listaDiscos = new ArrayList<>();
+
+        for (int i = 0; i < tblTabla.getRowCount(); i++) { //coger siempre los valores de la tabla y guardarlos en lista
+            String titulo = tblTabla.getValueAt(i, 0).toString();
+            String artistaTabla = tblTabla.getValueAt(i, 1).toString();
+            int anioTabla = Integer.parseInt(tblTabla.getValueAt(i, 2).toString());
+            String generoTabla = tblTabla.getValueAt(i, 3).toString();
+            Disco disco = new Disco(titulo, artistaTabla, anioTabla, generoTabla);
+            listaDiscos.add(disco);
+        }
+
+        JFileChooser fc = new JFileChooser();
+
+        File actual = new File(".");
+        fc.setCurrentDirectory(actual);
+
+        String nombreArchivo = "";
+        if (btnSerializado.isSelected()) { //si quiere serializado
+            FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.DAT", "dat"); //solo dat
+            fc.setFileFilter(filtro);
+            int seleccion = fc.showOpenDialog(this);
+
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File archivoSeleccionado = fc.getSelectedFile();
+                nombreArchivo = archivoSeleccionado.getName();
+                EscrituraFicheroSerializado.escrituraSerializado(listaDiscos, nombreArchivo);
+                lblAvisoExportar.setText("");
+            } else {
+                lblAvisoExportar.setText("Indica que fichero quieres!");
+                lblAvisoExportar.setForeground(Color.red);
+            }
+            
+        } else if (btnCSV.isSelected()) { //si quiere csv
+            FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.CSV", "csv"); //solo csv
+            fc.setFileFilter(filtro);
+            int seleccion = fc.showOpenDialog(this);
+
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File archivoSeleccionado = fc.getSelectedFile();
+                nombreArchivo = archivoSeleccionado.getName();
+                EscrituraFicheroCSV.escrituraCsv(listaDiscos, nombreArchivo);
+                lblAvisoExportar.setText("");
+            } else {
+                lblAvisoExportar.setText("Indica que fichero quieres!");
+                lblAvisoExportar.setForeground(Color.red);
+            }
+        }
+    }//GEN-LAST:event_lblExportarMouseClicked
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(PantallaDiscos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(PantallaDiscos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(PantallaDiscos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(PantallaDiscos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new PantallaDiscos().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JRadioButton btnCSV;
+    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnInsertar;
+    private javax.swing.JButton btnRestablecer;
+    private javax.swing.JRadioButton btnSerializado;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JComboBox<String> cmbAnio;
+    private javax.swing.JComboBox<String> cmbAnioBusqueda;
+    private javax.swing.JComboBox<String> cmbArtistaBusqueda;
+    private javax.swing.JComboBox<String> cmbGeneroBusqueda;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel lblAnio;
+    private javax.swing.JLabel lblAnioBusqueda;
+    private javax.swing.JLabel lblArtista;
+    private javax.swing.JLabel lblArtistaBusqueda;
+    private javax.swing.JLabel lblAviso;
+    private javax.swing.JLabel lblAvisoBusqueda;
+    private javax.swing.JLabel lblAvisoExportar;
+    private javax.swing.JLabel lblBusqueda;
+    private javax.swing.JLabel lblEdicion;
+    private javax.swing.JLabel lblExportacion;
+    private javax.swing.JButton lblExportar;
+    private javax.swing.JLabel lblGenero;
+    private javax.swing.JLabel lblGeneroBusqueda;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JLabel lblTituloBusqueda;
+    private javax.swing.JTable tblTabla;
+    private javax.swing.JTextField txtArtista;
+    private javax.swing.JTextField txtGenero;
+    private javax.swing.JTextField txtTitulo;
+    private javax.swing.JTextField txtTituloBusqueda;
+    // End of variables declaration//GEN-END:variables
+}
